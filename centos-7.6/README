@@ -1,0 +1,94 @@
+The libraries in this directory are from CentOS 7.6.1810 RPMs that can
+be accessed at https://vault.centos.org/7.6.1810.
+
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/dbus-libs-1.10.24-12.el7.x86_64.rpm:
+    libdbus-1.so.3
+    libdbus-1.so.3.14.14
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/freetype-2.8-12.el7.x86_64.rpm:
+    libfreetype.so.6
+    libfreetype.so.6.14.0
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/lz4-1.7.5-2.el7.x86_64.rpm:
+    liblz4.so.1
+    liblz4.so.1.7.5
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/systemd-libs-219-62.el7.x86_64.rpm:
+    libnss_myhostname.so.2
+    libnss_mymachines.so.2
+    libsystemd-daemon.so.0
+    libsystemd-daemon.so.0.0.12
+    libsystemd-id128.so.0
+    libsystemd-id128.so.0.0.28
+    libsystemd-journal.so.0
+    libsystemd-journal.so.0.11.5
+    libsystemd-login.so.0
+    libsystemd-login.so.0.9.3
+    libsystemd.so.0
+    libsystemd.so.0.6.0
+    libudev.so.1
+    libudev.so.1.6.2
+    security/pam_systemd.so
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxcb-1.13-1.el7.x86_64.rpm:
+    libxcb-composite.so.0
+    libxcb-composite.so.0.0.0
+    libxcb-damage.so.0
+    libxcb-damage.so.0.0.0
+    libxcb-dpms.so.0
+    libxcb-dpms.so.0.0.0
+    libxcb-dri2.so.0
+    libxcb-dri2.so.0.0.0
+    libxcb-dri3.so.0
+    libxcb-dri3.so.0.0.0
+    libxcb-glx.so.0
+    libxcb-glx.so.0.0.0
+    libxcb-present.so.0
+    libxcb-present.so.0.0.0
+    libxcb-randr.so.0
+    libxcb-randr.so.0.1.0
+    libxcb-record.so.0
+    libxcb-record.so.0.0.0
+    libxcb-render.so.0
+    libxcb-render.so.0.0.0
+    libxcb-res.so.0
+    libxcb-res.so.0.0.0
+    libxcb-screensaver.so.0
+    libxcb-screensaver.so.0.0.0
+    libxcb-shape.so.0
+    libxcb-shape.so.0.0.0
+    libxcb-shm.so.0
+    libxcb-shm.so.0.0.0
+    libxcb-sync.so.1
+    libxcb-sync.so.1.0.0
+    libxcb-xevie.so.0
+    libxcb-xevie.so.0.0.0
+    libxcb-xf86dri.so.0
+    libxcb-xf86dri.so.0.0.0
+    libxcb-xfixes.so.0
+    libxcb-xfixes.so.0.0.0
+    libxcb-xinerama.so.0
+    libxcb-xinerama.so.0.0.0
+    libxcb-xinput.so.0
+    libxcb-xinput.so.0.1.0
+    libxcb-xkb.so.1
+    libxcb-xkb.so.1.0.0
+    libxcb-xselinux.so.0
+    libxcb-xselinux.so.0.0.0
+    libxcb-xtest.so.0
+    libxcb-xtest.so.0.0.0
+    libxcb-xv.so.0
+    libxcb-xv.so.0.0.0
+    libxcb-xvmc.so.0
+    libxcb-xvmc.so.0.0.0
+    libxcb.so.1
+    libxcb.so.1.1.0
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxkbcommon-0.7.1-1.el7.x86_64.rpm:
+    libxkbcommon.so.0
+    libxkbcommon.so.0.0.0
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxkbcommon-x11-0.7.1-1.el7.x86_64.rpm:
+    libxkbcommon-x11.so.0
+    libxkbcommon-x11.so.0.0.0
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/libwayland-cursor-1.15.0-1.el7.x86_64.rpm:
+    libwayland-cursor.so.0
+    libwayland-cursor.so.0.0.0
+
+https://vault.centos.org/7.6.1810/os/x86_64/Packages/libwayland-client-1.15.0-1.el7.x86_64.rpm:
+    libwayland-client.so.0
+    libwayland-client.so.0.3.0

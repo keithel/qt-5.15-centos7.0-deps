@@ -1,0 +1,18 @@
+#!/bin/sh
+arg=$1
+
+if [ -z "$1" ]; then
+    echo "no RPM provided"
+    exit 1
+fi
+
+#rpm -qlp $arg | awk '/^\/usr\/lib64/ {print $1 }'
+files=$(rpm -qlp $arg)
+for f in $files; do
+    if [[ $f == *.so.* ]]; then
+        if [[ $f != /usr/lib64/* ]]; then
+            echo "Shared libs found outside of /usr/lib64"
+        fi
+        echo $f
+    fi
+done

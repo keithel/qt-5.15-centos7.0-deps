@@ -1,0 +1,139 @@
+#!/bin/sh
+
+# This script downloads and unpacks required CentOS 7.6.1810 libraries
+# for Qt 5.15.2, to allow Qt applications to run on CentOS 7.0.
+#
+# The CentOS 7.6 packages come from https://vault.centos.org/7.6.1810
+#
+# This likely does not cover all libraries needed for any Qt
+# applications, but should cover all basic Qt Widgets applications.
+#
+# OpenGL libraries may be needed for QML and other OpenGL based
+# applications. You can search for the required libraries at
+# https://vault.centos.org/7.6.1810, and add them to this script to
+# automate their installation.
+
+arg=$1
+curdir=$PWD
+destlibdir=$HOME/Qt-5.15.2.deplibs
+set -u
+set -e
+
+if [ -e $destlibdir ]; then
+    echo >&2 "error: destination lib dir exists. This is unexpected."
+    exit 1
+fi
+mkdir $destlibdir
+trap "rm -Rf $destlibdir" INT TERM EXIT
+cat << EOF > $destlibdir/README
+The libraries in this directory are from CentOS 7.6.1810 RPMs that can
+be accessed at https://vault.centos.org/7.6.1810.
+
+This likely does not cover all libraries needed for any Qt
+applications, but should cover all basic Qt Widgets applications.
+
+OpenGL libraries may be needed for QML and other OpenGL based
+applications. You can search for the required libraries at
+https://vault.centos.org/7.6.1810.
+
+To use this, you can run the Qt online installer tool you download
+from https://account.qt.io/downloads by setting the LD_LIBRARY_PATH
+environment variable prior to invoking the installer like so:
+    $ LD_LIBRARY_PATH=\$HOME/Qt-5.15.2.deplibs ~/Downloads/qt-unified-linux-x64-4.0.1-1-online.run
+
+Once you have Qt installed, you can run other Qt applications by
+additionally supplying the Qt 5.15.x lib directory in the 
+LD_LIBRARY_PATH variable like so:
+    $ LD_LIBRARY_PATH=\$HOME/Qt-5.15.2.deplibs:<Path to Qt libs> <Qt executable>
+
+    e.g.: LD_LIBRARY_PATH=\$HOME/Qt-5.15.2.deplibs:\$HOME/Qt/5.15.2/gcc_64/lib ~/Downloads/gallery
+
+If you would like to bake these paths into your Qt executable, you can
+use a tool called patchelf ( https://github.com/NixOS/patchelf ) to
+add RPATHs to the executable.
+
+Below is a listing of all of the RPMs which we gather shared
+libraries from, and a listing of those shared libraries:
+
+
+EOF
+
+if [ -n "$arg" ]; then
+    echo >&2 "error: arguments are unexpected."
+    exit 1
+fi
+
+urls=(
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/dbus-libs-1.10.24-12.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/freetype-2.8-12.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/lz4-1.7.5-2.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/systemd-libs-219-62.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxcb-1.13-1.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxkbcommon-0.7.1-1.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/libxkbcommon-x11-0.7.1-1.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/libwayland-cursor-1.15.0-1.el7.x86_64.rpm
+    https://vault.centos.org/7.6.1810/os/x86_64/Packages/libwayland-client-1.15.0-1.el7.x86_64.rpm
+)
+
+basepath=$(basename $0)
+timestamp=$(date +%Y%m%d%H%M%S)
+tmpd=$(mktemp -dt "$basepath.$timestamp.$$.XXX")/
+#echo >&2 "tmpd: $tmpd"
+cd $tmpd
+
+echo "Fetching required CentOS 7.6 RPMs"
+for url in ${urls[@]}; do
+    rpm=$(basename $url)
+
+    echo "    $url"
+    curl -L -O $url >/dev/null 2>&1
+
+    grep "404 Not found" $rpm && {
+        echo >&2 "error: $rpm not found"
+        exit 1
+    }
+done
+
+echo "Unpacking RPMs"
+mkdir unpacked_rpm
+for url in ${urls[@]}; do
+    rpm=$(basename $url)
+    #echo >&2 "rpm: $rpm"
+
+    #rpm -qlp $rpm | awk '/^\/usr\/lib64/ {print $1 }'
+    files=$(rpm -qlp $rpm)
+    sofiles=()
+    for f in $files; do
+        if [[ $f == *.so || $f == *.so.* ]]; then
+            if [[ $f != /usr/lib64/* ]]; then
+                echo >&2 "error: Shared libs found outside of /usr/lib64"
+                exit 1
+            fi
+            #echo >&2 "adding $f to sofiles"
+            sofiles+=($f)
+        fi
+    done
+
+    cd unpacked_rpm
+    rpm2cpio ../$rpm 2>/dev/null | cpio -id >/dev/null 2>&1
+    mv $PWD/usr/lib64/* $destlibdir
+    cd ..
+    rm -Rf unpacked_rpm/*
+    echo "$url:" >> $destlibdir/README
+    for sofile in ${sofiles[@]}; do
+        echo "    $sofile" | sed -e 's/\/usr\/lib64\///' >> $destlibdir/README
+    done
+
+    echo -n "."
+done
+
+echo -ne "\n\n"
+echo "Qt 5.15.2 CentOS 7.6 dependency libs can be found in:"
+echo "    $destlibdir"
+echo
+echo "Inside you can find a README that explains how to manually recreate"
+echo "the archive of dependency libraries, as well as explaining its"
+echo "limitations."
+
+cd $curdir
+trap "rm -Rf $tmpd" INT TERM EXIT

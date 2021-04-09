@@ -1,0 +1,35 @@
+#!/bin/sh
+arg=$1
+curdir=$PWD
+
+if [ -z "$1" ]; then
+    echo "no RPM provided"
+    exit 1
+fi
+
+#rpm -qlp $arg | awk '/^\/usr\/lib64/ {print $1 }'
+files=$(rpm -qlp $arg)
+sofiles=()
+for f in $files; do
+if [[ $f == *.so.* ]]; then
+    if [[ $f != /usr/lib64/* ]]; then
+	echo "error: Shared libs found outside of /usr/lib64"
+	exit 1
+    fi
+    sofiles+=($f)
+    echo $f
+fi
+done
+
+basepath=$(basename $0)
+timestamp=$(date +%Y%m%d%H%M%S)
+tmpd=$(mktemp -dt "$basepath.$timestamp.$$.XXX")/
+cd $tmpd
+rpm2cpio $arg | cpio -id
+mv $PWD/usr/lib64/* $HOME/Qt/5.15.2/gcc_64/lib/centos-7.6
+echo "https://vault.centos.org/7.6.1810/os/x86_64/Packages/$(basename $arg):" >> $HOME/Qt/5.15.2/gcc_64/lib/centos-7.6/README
+for sofile in ${sofiles[@]}; do
+    echo "    $sofile" | sed -e 's/\/usr\/lib64\///' >> $HOME/Qt/5.15.2/gcc_64/lib/centos-7.6/README
+done
+cd $curdir
+rm -Rf $tmpd
